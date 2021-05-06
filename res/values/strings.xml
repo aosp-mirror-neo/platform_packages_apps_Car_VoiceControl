@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2021 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<resources>
+    <string name="app_name" translatable="false">Mica</string>
+    <string name="preferences_title" translatable="false">Mica settings</string>
+    <string name="general_preferences" translatable="false">General settings</string>
+    <string name="hotword_enabled_preference" translatable="false">Enable \"always-on\" hot word detection</string>
+    <string name="summary_on_toggle_preference" translatable="false">Hot word detection disabled</string>
+    <string name="summary_off_toggle_preference" translatable="false">Hot word detection enabled</string>
+    <string name="sign_in_username_help_text" translatable="false">Forgot username? | Use phone app to sign in</string>
+    <string name="sign_in_button" translatable="false">Sign In</string>
+    <string name="sign_in_title" translatable="false">Welcome to Mica Assistant</string>
+    <string name="sign_in_fake_username" translatable="false">John Smith</string>
+    <string name="grant_permissions_button" translatable="false">Grant permissions</string>
+    <string name="notification_listener_button" translatable="false">Enable notif. listener</string>
+
+    <string name="preference_sign_out" translatable="false">Sign out</string>
+    <string name="preference_sign_out_summary" translatable="false">Tap here to log out</string>
+    <string name="preference_sign_in" translatable="false">Sign in</string>
+    <string name="preference_sign_in_summary" translatable="false">Tap here to log in</string>
+    <string name="preference_voice" translatable="false">Preferred voice</string>
+    <string name="preference_voice_summary" translatable="false">Select the type of voice you would like Mica to use</string>
+
+    <!-- TTS -->
+    <string name="speech_reply_nav_okay" translatable="false">Alright, starting navigation to \'%s\'.</string>
+    <string name="speech_reply_nav_cancel_not_supported" translatable="false">Sorry but I couldn\'t stop the navigation.</string>
+    <string name="speech_reply_nav_start_not_supported" translatable="false">Sorry but I couldn\'t start the navigation.</string>
+    <string name="speech_reply_time_okay" translatable="false">The time is %s.</string>
+    <string name="speech_reply_unrecognized_cmd" translatable="false">I\'m sorry, but I don\'t know how to do that.</string>
+    <string name="speech_reply_application_not_found" translatable="false">I couldn\'t find any application named \'%s\'.</string>
+    <string name="speech_reply_unable_to_connect" translatable="false">I couldn\'t connect to \'%s\'.</string>
+    <string name="speech_reply_crashed" translatable="false">Looks like \'%s\' crashed.</string>
+    <string name="speech_reply_source_error" translatable="false">Seems that \'%s\' is having some difficulties.</string>
+    <string name="speech_reply_remote_error" translatable="false">I\'m having some difficulties connecting to \'%s\'.</string>
+    <string name="speech_reply_not_ready_to_play" translatable="false">Sorry, but \'%s\' is not ready to play right now.</string>
+    <string name="speech_reply_okay_to_play_source" translatable="false">Okay, playing on \'%s\'.</string>
+    <string name="speech_reply_nothing_to_play" translatable="false">\'%s\' was selected, but it is not playing anything.</string>
+    <string name="speech_reply_playing_unknown" translatable="false">Playing an unknown song from \'%s\'.</string>
+    <string name="speech_reply_playing_song" translatable="false">Currently playing \'%1$s\' in \'%2$s\'.</string>
+    <string name="speech_reply_source_is_not_playing" translatable="false">\'%s\' is not playing right now.</string>
+    <string name="speech_reply_okay_stopping" translatable="false">Okay, stopping \'%s\'.</string>
+    <string name="speech_reply_cannot_pause" translatable="false">\'%s\' can not pause right now.</string>
+    <string name="speech_reply_okay_pausing" translatable="false">Okay, pausing \'%s\'.</string>
+    <string name="speech_reply_cannot_resume" translatable="false">\'%s\' is not able to resume playing right now.</string>
+    <string name="speech_reply_okay_resuming" translatable="false">Okay, resuming \'%s\'.</string>
+    <string name="speech_reply_radio_not_found" translatable="false">I\'m not sure what radio is that. Please try something like \'88.5 FM\'.</string>
+    <string name="speech_reply_okay_tuning_radio" translatable="false">Okay, tuning to \'%s\'.</string>
+    <string name="speech_reply_radio_cannot_stop" translatable="false">The radio service is not able to stop playing right now.</string>
+    <string name="speech_reply_okay_stop_radio" translatable="false">Okay, muting the radio.</string>
+    <string name="speech_reply_not_recognized" translatable="false">Sorry, I couldn\'t understand you.</string>
+    <string name="speech_reply_missing_permissions" translatable="false">In order to work properly I need you to provide me access to your device. When it is safe, please open the notifications panel and follow the instructions I left there for you.</string>
+    <string name="speech_reply_missing_notif_access" translatable="false">In order to read your notifications you need to provide me access. When it is safe, please open the notifications panel and follow the instructions I left there for you.</string>
+    <string name="speech_reply_error_reading_notif" translatable="false">Something went wrong trying to read your notifications.</string>
+    <string name="speech_reply_cannot_be_replied" translatable="false">That message can not be replied.</string>
+    <string name="speech_reply_sending_reply" translatable="false">Okay, sending the reply to \'%s\'.</string>
+    <string name="speech_reply_group_reply_receiver" translatable="false">the group</string>
+    <string name="speech_reply_cancelled_order" translatable="false">Okay.</string>
+    <string name="speech_reply_reply_question" translatable="false">Do you want to reply?.</string>
+    <string name="speech_reply_reading_single_notif" translatable="false">Okay, here is the message: \'%1$s\' said \'%2$s\'.</string>
+    <string name="speech_reply_reading_multiple_notif_header" translatable="false">Okay, here are your messages: </string>
+    <string name="speech_reply_reading_multiple_notif_item" translatable="false">\'%1$s\' said \'%2$s\'.</string>
+    <string name="speech_reply_reading_multiple_notif_footer" translatable="false">Those are all the messages.</string>
+    <string name="speech_reply_no_messages_in_notif" translatable="false">Sorry, but there are no messages in that notification.</string>
+    <string name="speech_reply_message_question" translatable="false">What\'s the message?</string>
+    <string name="speech_reply_cannot_control_ac" translatable="false">I\'m sorry, but I can\'t control the AC of your vehicle.</string>
+    <string name="speech_reply_ac_is_already_on" translatable="false">The AC is already on.</string>
+    <string name="speech_reply_ac_is_already_off" translatable="false">The AC is already off.</string>
+    <string name="speech_reply_turning_ac_on" translatable="false">Okay, I\'m turning your front AC on.</string>
+    <string name="speech_reply_turning_ac_off" translatable="false">Okay, I\'m turning your front AC off.</string>
+    <string name="speech_reply_cannot_read_speed" translatable="false">I\'m sorry, but I can\'t read the speed of this vehicle.</string>
+    <string name="speech_reply_speed_value" translatable="false">Sure. Your current speed is %1$d %2$s.</string>
+    <string name="speech_reply_cannot_read_tire_pressure" translatable="false">I\'m sorry, but I can\'t read the tire pressure of your vehicle.</string>
+    <string name="speech_reply_tire_pressure_value" translatable="false">Sure. Your front tires are at %1$s %2$s, while your rear tires are at %3$s %4$s.</string>
+    <string name="speech_reply_tire_pressure_separator" translatable="false">, </string>
+    <string name="speech_reply_tire_pressure_last_separator" translatable="false"> and </string>
+    <string name="speech_reply_request_message" translatable="false">Okay, what\'s the message?</string>
+    <string name="speech_reply_confirm_send_sms_contact" translatable="false">Do you mean sending an SMS to \'%1$s\' at \'%2$s\', correct?</string>
+    <string name="speech_reply_unrecognized_contact" translatable="false">Sorry, please try using a different name or phone number.</string>
+    <string name="speech_reply_okay_sending_sms" translatable="false">Okay, sending message to \'%s\'.</string>
+    <string name="speech_reply_error_sending_sms" translatable="false">Something went wrong sending an SMS to \'%s\'.</string>
+    <string name="speech_reply_phone_not_available" translatable="false">I can\'t make phone calls right now. Check your phone settings or your bluetooth connection.</string>
+    <string name="speech_reply_okay_calling" translatable="false">Alright, calling \'%s\'.</string>
+    <string name="speech_reply_error_calling" translatable="false">Something went wrong calling \'%s\'.</string>
+    <string name="speech_reply_confirm_calling_contact" translatable="false">Do you mean calling \'%1$s\' at \'%2$s\', correct?.</string>
+    <string name="speech_reply_yes_no_question_not_understood" translatable="false">Sorry, but I didn\'t get your answer. Please say \'yes\' or \'no\'.</string>
+    <string-array name="speech_reply_affirmative_answers" translatable="false">
+        <item>yes</item>
+        <item>please</item>
+        <item>go ahead</item>
+        <item>of course</item>
+    </string-array>
+    <string-array name="speech_reply_negative_answers" translatable="false">
+        <item>no</item>
+        <item>cancel</item>
+        <item>stop</item>
+    </string-array>
+
+    <string name="notification_setup_title" translatable="false">Mica setup is incomplete</string>
+    <string name="notification_setup_text" translatable="false">Tap here to complete Mica sign-in flow.</string>
+    <string-array name="recognizer_phrases" translatable="false">
+        <item>What\'s the time?</item>
+        <item>Play Madonna on Pandora</item>
+        <item>Stop</item>
+        <item>Play</item>
+        <item>Tune 88.5 FM</item>
+        <item>Stop</item>
+        <item>Navigate to Starbucks</item>
+    </string-array>
+
+    <!-- Car actuator -->
+    <string name="property_speed_unit" translatable="false">miles per hour</string>
+    <string name="property_pressure_unit" translatable="false">PSIs</string>
+</resources>
