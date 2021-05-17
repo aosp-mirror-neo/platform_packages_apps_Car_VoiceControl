@@ -30,8 +30,6 @@ android_app {
         "res"
     ],
 
-    required: ["allowed_privapp_com.android.car.voicecontrol"],
-
     certificate: "platform",
 
     platform_apis: true,
