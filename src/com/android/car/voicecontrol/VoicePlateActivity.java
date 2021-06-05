@@ -15,8 +15,12 @@
  */
 package com.android.car.voicecontrol;
 
+import static com.android.car.voicecontrol.DirectSendUtils.AMBIGUOUS_RESULT;
+
 import android.app.Activity;
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -28,10 +32,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.android.car.TelecomUtils;
 import com.android.car.assist.CarVoiceInteractionSession;
 import com.android.car.assist.payloadhandlers.ConversationPayloadHandler;
 import com.android.car.assist.payloadhandlers.NotificationPayloadHandler;
 import com.android.car.messenger.common.Conversation;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.voicecontrol.actuators.SkillRouter;
 
 import java.util.List;
@@ -52,6 +59,7 @@ public class VoicePlateActivity extends Activity
     private Handler mHandler = new Handler();
     private NotificationPayloadHandler mNotifHandler;
     private InteractionServiceClient mInteractionService;
+    private TelecomUtils mTelecomUtils;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +77,8 @@ public class VoicePlateActivity extends Activity
             }
         };
         mInteractionService.connect();
+
+        mTelecomUtils = new TelecomUtils(getApplicationContext());
     }
 
     @Override
@@ -119,7 +129,212 @@ public class VoicePlateActivity extends Activity
             onReplyConversation(intent.getBundleExtra(EXTRA_ARGS));
             return;
         }
+        if (CarVoiceInteractionSession.VOICE_ACTION_SEND_SMS.equals(action)) {
+            onDirectSendSMS(intent.getBundleExtra(EXTRA_ARGS));
+            return;
+        }
         mSTT.startListening(this);
+    }
+
+    private void askToSendSMS(PendingIntent pendingIntent,
+            String deviceAddress, String number, String name) {
+        mPresenter.updateRecognizedText(getString(R.string.speech_reply_request_message));
+        mTTS.ask(strings -> {
+            if (strings.isEmpty()) {
+                mTTS.speak(R.string.speech_reply_not_recognized);
+                mPresenter.updateRecognizedText(getString(R.string.speech_reply_not_recognized));
+                return;
+            }
+
+            String message = strings.get(0);
+            String speech = getString(R.string.speech_reply_okay_sending_sms, name);
+            mTTS.speak(speech);
+            mPresenter.updateRecognizedText(speech);
+
+            DirectSendUtils.sendSMS(getApplicationContext(),
+                    pendingIntent, deviceAddress, number, message);
+        }, R.string.speech_reply_request_message);
+    }
+
+    private void askToDisambiguatePhoneNumber(DirectSendUtils.ResultsCallback callback,
+            String deviceAddress) {
+        mPresenter.updateRecognizedText(getString(R.string.speech_reply_request_contact));
+        mTTS.ask(strings -> {
+            if (strings.isEmpty()) {
+                callback.onFailure(getString(R.string.speech_reply_unrecognized_contact));
+                return;
+            }
+            Contact contact = mInteractionService.getContact(strings.get(0), deviceAddress);
+            if (contact == null) {
+                callback.onFailure(getString(R.string.speech_reply_unrecognized_contact));
+                return;
+            }
+
+            if (contact.getNumbers().size() == 0) {
+                callback.onFailure(getString(R.string.speech_reply_unrecognized_contact));
+            } else if (contact.getNumbers().size() == 1) {
+                callback.onSuccess(contact.getNumbers().get(0).getNumber(),
+                        contact.getDisplayName());
+            } else if (contact.getNumbers().size() > 1) {
+                String numberAskString = DirectSendUtils.formatNumberAskString(
+                        getApplicationContext(), contact.getNumbers());
+                mPresenter.updateRecognizedText(numberAskString);
+                mTTS.ask(strings2 -> {
+                    if (strings2.isEmpty()) {
+                        callback.onFailure(getString(R.string.speech_reply_unrecognized_number));
+                        return;
+                    }
+
+                    String input = strings2.get(0).toLowerCase();
+                    String[] ordinals = getResources().getStringArray(
+                            R.array.speech_reply_ordinals);
+                    PhoneNumber phoneNumber;
+                    try {
+                        if (ordinals[0].equals(input)) {
+                            phoneNumber = contact.getNumbers().get(0);
+                        } else if (ordinals[1].equals(input)) {
+                            phoneNumber = contact.getNumbers().get(1);
+                        } else if (ordinals[2].equals(input)) {
+                            phoneNumber = contact.getNumbers().get(2);
+                        } else {
+                            callback.onFailure(
+                                    getString(R.string.speech_reply_unrecognized_number));
+                            return;
+                        }
+                        callback.onSuccess(phoneNumber.getNumber(), contact.getDisplayName());
+                    } catch (IndexOutOfBoundsException ex) {
+                        Log.w(TAG, "Specified phone number index out of list bounds. " + ex);
+                        callback.onFailure(getString(R.string.speech_reply_unrecognized_number));
+                    }
+                }, numberAskString);
+            }
+        }, R.string.speech_reply_request_contact);
+    }
+
+    private void askToDisambiguateDeviceAddress(DirectSendUtils.ResultsCallback callback) {
+        List<BluetoothDevice> devices = mTelecomUtils.getHfpDeviceList();
+        String deviceAskString = DirectSendUtils.formatDeviceAskString(getApplicationContext(),
+                devices);
+        mPresenter.updateRecognizedText(deviceAskString);
+
+        mTTS.ask(strings -> {
+            String disambiguatedAddress = null;
+
+            if (strings.isEmpty()) {
+                callback.onFailure(getString(R.string.speech_reply_unrecognized_device));
+                return;
+            }
+
+            try {
+                String input = strings.get(0).toLowerCase();
+                String[] ordinals = getResources().getStringArray(R.array.speech_reply_ordinals);
+
+                if (ordinals[0].equals(input)) {
+                    disambiguatedAddress = devices.get(0).getAddress();
+                } else if (ordinals[1].equals(input)) {
+                    disambiguatedAddress = devices.get(1).getAddress();
+                } else if (ordinals[2].equals(input)) {
+                    disambiguatedAddress = devices.get(2).getAddress();
+                } else {
+                    callback.onFailure(getString(R.string.speech_reply_unrecognized_device));
+                    return;
+                }
+
+                callback.onSuccess(disambiguatedAddress);
+            } catch (NullPointerException ex) {
+                callback.onFailure(getString(R.string.speech_reply_unrecognized_device));
+                Log.e(TAG, "Device not found" + ex);
+            }
+        }, deviceAskString);
+    }
+
+    private String getDeviceAddress(Bundle args) {
+        String address = args.getString(CarVoiceInteractionSession.KEY_DEVICE_ADDRESS);
+        if (address != null) {
+            return address;
+        }
+
+        List<BluetoothDevice> devices = mTelecomUtils.getHfpDeviceList();
+        if (devices.size() == 0) {
+            mPresenter.updateRecognizedText(getString(R.string.speech_reply_unrecognized_device));
+            mTTS.speak(R.string.speech_reply_unrecognized_device);
+            return null;
+        } else if (devices.size() == 1) {
+            return devices.get(0).getAddress();
+        } else {
+            return AMBIGUOUS_RESULT;
+        }
+    }
+
+    // Follows a chain of voice interactions to disambiguate phone number and device address.
+    private void onDirectSendSMS(Bundle args) {
+        Log.d(TAG, "Sending sms");
+        mPresenter.updateRecognizedText("Sending SMS");
+        mPresenter.updateState(VoicePlateController.State.DELIVERING);
+
+        // Pending Intent is required to send SMS.
+        PendingIntent pendingIntent = args.getParcelable(
+                CarVoiceInteractionSession.KEY_SEND_PENDING_INTENT);
+        if (pendingIntent == null) {
+            Log.d(TAG, "Pending Intent is null");
+            return;
+        }
+
+        // Address may or may not be provided.
+        String address = getDeviceAddress(args);
+        if (AMBIGUOUS_RESULT.equals(address)) {
+            // If address is not provided, then contact must be looked up.
+            askToDisambiguateDeviceAddress(new DirectSendUtils.ResultsCallback() {
+                @Override
+                public void onSuccess(String... strings) {
+                    String deviceAddress = strings[0];
+                    askToDisambiguatePhoneNumber(new DirectSendUtils.ResultsCallback() {
+                        @Override
+                        public void onSuccess(String... strings) {
+                            String phoneNumber = strings[0];
+                            String name = strings[1];
+                            askToSendSMS(pendingIntent, deviceAddress, phoneNumber, name);
+                        }
+                        @Override
+                        public void onFailure(String error) {
+                            mPresenter.updateRecognizedText(error);
+                            mTTS.speak(error);
+                        }
+                    }, deviceAddress);
+                }
+                @Override
+                public void onFailure(String error) {
+                    mPresenter.updateRecognizedText(error);
+                    mTTS.speak(error);
+                }
+            });
+            return;
+        }
+
+        // Address is provided, number may or may not be provided.
+        String number = args.getString(CarVoiceInteractionSession.KEY_PHONE_NUMBER);
+        if (number == null) {
+            askToDisambiguatePhoneNumber(new DirectSendUtils.ResultsCallback() {
+                @Override
+                public void onSuccess(String... strings) {
+                    String phoneNumber = strings[0];
+                    String name = strings[1];
+                    askToSendSMS(pendingIntent, address, phoneNumber, name);
+                }
+                @Override
+                public void onFailure(String error) {
+                    mPresenter.updateRecognizedText(error);
+                    mTTS.speak(error);
+                }
+            }, address);
+            return;
+        }
+
+        String name = args.getString(CarVoiceInteractionSession.KEY_RECIPIENT_NAME);
+        if (name == null) {
+            name = "";
+        }
+        askToSendSMS(pendingIntent, address, number, name);
     }
 
     private void onReplyConversation(Bundle args) {

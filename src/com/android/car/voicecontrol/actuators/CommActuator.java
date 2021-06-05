@@ -119,7 +119,7 @@ public class CommActuator implements SkillRouter.Actuator {
         if (isPhoneNumber(query)) {
             return Pair.create(query, query);
         }
-        Contact contact = mInteractionService.getContact(query);
+        Contact contact = mInteractionService.getContact(query, null);
         String number = getPhoneNumberFromContact(contact);
         if (number == null) {
             Log.d(TAG, "Contact doesn't have a phone: "

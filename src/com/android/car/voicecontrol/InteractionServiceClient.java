@@ -26,6 +26,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.android.car.telephony.common.Contact;
 
 /**
@@ -149,8 +151,8 @@ public class InteractionServiceClient {
     /**
      * @return a contact matching the provided query. See {@link ContactsProvider} for more details.
      */
-    public Contact getContact(String query) {
-        return getRemote(() -> mInteractionService.getContact(query));
+    public Contact getContact(String query, @Nullable String deviceAddress) {
+        return getRemote(() -> mInteractionService.getContact(query, deviceAddress));
     }
 
     private interface RemoteSupplier<T> {

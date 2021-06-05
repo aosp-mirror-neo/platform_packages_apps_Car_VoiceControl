@@ -28,5 +28,5 @@ interface ILocalService {
     void setUsername(String value);
     boolean hasAllPermissions();
     boolean isNotificationListener();
-    Contact getContact(String query);
+    Contact getContact(String query, String deviceAddress);
 }

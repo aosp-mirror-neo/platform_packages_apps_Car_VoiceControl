@@ -32,6 +32,7 @@ import android.service.voice.VoiceInteractionService;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.car.assist.CarVoiceInteractionSession;
@@ -56,7 +57,8 @@ public class InteractionService extends VoiceInteractionService {
     private static final List<String> SUPPORTED_VOICE_ACTIONS = Arrays.asList(
             CarVoiceInteractionSession.VOICE_ACTION_READ_NOTIFICATION,
             CarVoiceInteractionSession.VOICE_ACTION_REPLY_NOTIFICATION,
-            CarVoiceInteractionSession.VOICE_ACTION_HANDLE_EXCEPTION
+            CarVoiceInteractionSession.VOICE_ACTION_HANDLE_EXCEPTION,
+            CarVoiceInteractionSession.VOICE_ACTION_SEND_SMS
     );
     public static final List<String> REQUIRED_PERMISSIONS = Arrays.asList(
             Manifest.permission.RECORD_AUDIO,
@@ -119,8 +121,8 @@ public class InteractionService extends VoiceInteractionService {
         }
 
         @Override
-        public Contact getContact(String query) {
-            return mContactsProvider.getContact(query);
+        public Contact getContact(String query, @Nullable String deviceAddress) {
+            return mContactsProvider.getContact(query, deviceAddress);
         }
     };
     private final RemoteCallbackList<ILocalServiceListener> mListeners = new RemoteCallbackList<>();

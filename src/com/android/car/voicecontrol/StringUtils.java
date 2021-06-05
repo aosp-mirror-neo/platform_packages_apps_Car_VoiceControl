@@ -33,9 +33,11 @@ public final class StringUtils {
     public static int getMinDistance(String source, String... targets) {
         int d = Integer.MAX_VALUE;
         for (String t : targets) {
-            int newD = getDistance(source, t);
-            d = Math.min(d, newD);
-            Log.d(TAG, "Distance between: '" + source + "' and '" + t + "': " + newD);
+            if (t != null) {
+                int newD = getDistance(source, t);
+                d = Math.min(d, newD);
+                Log.d(TAG, "Distance between: '" + source + "' and '" + t + "': " + newD);
+            }
         }
         return d;
     }

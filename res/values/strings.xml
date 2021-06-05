@@ -88,6 +88,9 @@
     <string name="speech_reply_tire_pressure_separator" translatable="false">, </string>
     <string name="speech_reply_tire_pressure_last_separator" translatable="false"> and </string>
     <string name="speech_reply_request_message" translatable="false">Okay, what\'s the message?</string>
+    <string name="speech_reply_request_contact">Okay, who would you like to send the message to?</string>
+    <string name="speech_reply_request_number">Which number would you like to send to?</string>
+    <string name="speech_reply_request_device">Which device would you like to send from?</string>
     <string name="speech_reply_confirm_send_sms_contact" translatable="false">Do you mean sending an SMS to \'%1$s\' at \'%2$s\', correct?</string>
     <string name="speech_reply_unrecognized_contact" translatable="false">Sorry, please try using a different name or phone number.</string>
     <string name="speech_reply_okay_sending_sms" translatable="false">Okay, sending message to \'%s\'.</string>
@@ -97,6 +100,8 @@
     <string name="speech_reply_error_calling" translatable="false">Something went wrong calling \'%s\'.</string>
     <string name="speech_reply_confirm_calling_contact" translatable="false">Do you mean calling \'%1$s\' at \'%2$s\', correct?.</string>
     <string name="speech_reply_yes_no_question_not_understood" translatable="false">Sorry, but I didn\'t get your answer. Please say \'yes\' or \'no\'.</string>
+    <string name="speech_reply_unrecognized_device">Sorry, but I don\'t recognize this device.</string>
+    <string name="speech_reply_unrecognized_number">Sorry, but I don\'t recognize this number.</string>
     <string-array name="speech_reply_affirmative_answers" translatable="false">
         <item>yes</item>
         <item>please</item>
@@ -107,6 +112,11 @@
         <item>no</item>
         <item>cancel</item>
         <item>stop</item>
+    </string-array>
+    <string-array name="speech_reply_ordinals">
+        <item>first</item>
+        <item>second</item>
+        <item>third</item>
     </string-array>
 
     <string name="notification_setup_title" translatable="false">Mica setup is incomplete</string>

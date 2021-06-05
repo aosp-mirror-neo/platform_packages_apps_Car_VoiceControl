@@ -98,14 +98,27 @@ public class ContactsProvider {
      * multiple potential candidates could improve accuracy.
      * This implementation just find the contact with the minimum edit distance to the recognized
      * string.
+     *
+     * @param deviceAddress The bluetooth device address. If provided, only return contacts from
+     *                      the specified device, otherwise return all contacts.
      */
     @Nullable
-    public Contact getContact(String query) {
+    public Contact getContact(String query, @Nullable String deviceAddress) {
         String normalizedInput = query.toLowerCase().trim();
         String phoneticKey = StringUtils.soundex(normalizedInput);
-        Set<Contact> contactsForPhoneticKey = mContactsByPhoneticKey.get(phoneticKey);
-        Log.d(TAG, "Get contact: " + query + " phonetic key: " + phoneticKey + " contacts: "
-                + (contactsForPhoneticKey != null ? contactsForPhoneticKey.size() : "-"));
+
+        Set<Contact> contactsForPhoneticKey;
+        contactsForPhoneticKey = mContactsByPhoneticKey.get(phoneticKey);
+        if (deviceAddress != null) {
+            contactsForPhoneticKey.removeIf(contact ->
+                    !contact.getAccountName().equals(deviceAddress));
+        }
+
+        Log.d(TAG, "Device: " + deviceAddress
+                + " contact query: " + query
+                + " phonetic key: " + phoneticKey
+                + " contacts: " + (contactsForPhoneticKey != null
+                ? contactsForPhoneticKey.size() : "-"));
         if (contactsForPhoneticKey == null) {
             return null;
         }
