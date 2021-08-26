@@ -17,7 +17,10 @@ package com.android.car.voicecontrol;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -26,7 +29,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.car.assist.CarVoiceInteractionSession;
+import com.android.car.assist.payloadhandlers.ConversationPayloadHandler;
 import com.android.car.assist.payloadhandlers.NotificationPayloadHandler;
+import com.android.car.messenger.common.Conversation;
 import com.android.car.voicecontrol.actuators.SkillRouter;
 
 import java.util.List;
@@ -91,25 +96,66 @@ public class VoicePlateActivity extends Activity
         Intent intent = getIntent();
         String action = intent.getStringExtra(EXTRA_ACTION);
         if (CarVoiceInteractionSession.VOICE_ACTION_READ_NOTIFICATION.equals(action)) {
-            onReadNotification(intent.getBundleExtra(EXTRA_ARGS));
+            Notification notification =
+                    mNotifHandler.getNotification(intent.getBundleExtra(EXTRA_ARGS));
+            onReadNotification(notification);
             return;
         }
         if (CarVoiceInteractionSession.VOICE_ACTION_REPLY_NOTIFICATION.equals(action)) {
-            onReplyNotification(intent.getBundleExtra(EXTRA_ARGS));
+            Notification notification =
+                    mNotifHandler.getNotification(intent.getBundleExtra(EXTRA_ARGS));
+            onReplyNotification(notification);
             return;
         }
         if (CarVoiceInteractionSession.VOICE_ACTION_HANDLE_EXCEPTION.equals(action)) {
             onReadNotificationException(intent.getBundleExtra(EXTRA_ARGS));
             return;
         }
+        if (CarVoiceInteractionSession.VOICE_ACTION_READ_CONVERSATION.equals(action)) {
+            onReadConversation(intent.getBundleExtra(EXTRA_ARGS));
+            return;
+        }
+        if (CarVoiceInteractionSession.VOICE_ACTION_REPLY_CONVERSATION.equals(action)) {
+            onReplyConversation(intent.getBundleExtra(EXTRA_ARGS));
+            return;
+        }
         mSTT.startListening(this);
     }
 
-    private void onReadNotification(Bundle args) {
+    private void onReplyConversation(Bundle args) {
+        Conversation conversation = Conversation.fromBundle(
+                args.getBundle(CarVoiceInteractionSession.KEY_CONVERSATION));
+        Notification notification = ConversationPayloadHandler.createNotificationFromConversation(
+                this, "channel_id", conversation, getIconRes(this), null);
+        onReplyNotification(notification);
+    }
+
+    private void onReadConversation(Bundle args) {
+        Conversation conversation = Conversation.fromBundle(
+                args.getBundle(CarVoiceInteractionSession.KEY_CONVERSATION));
+        Notification notification = ConversationPayloadHandler.createNotificationFromConversation(
+                this, "channel_id", conversation, getIconRes(this), null);
+        onReadNotification(notification);
+    }
+
+    private int getIconRes(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            ApplicationInfo applicationInfo =
+                    packageManager.getApplicationInfo(
+                            context.getPackageName(), PackageManager.GET_META_DATA);
+            return applicationInfo.icon;
+        } catch (PackageManager.NameNotFoundException e) {
+            //logger.atWarning().log("Package name not found in system");
+            return 0;
+        }
+    }
+
+    private void onReadNotification(Notification notif) {
         Log.d(TAG, "Reading notification");
         mPresenter.updateRecognizedText("Reading a notification");
         mPresenter.updateState(VoicePlateController.State.DELIVERING);
-        List<NotificationCompat.MessagingStyle.Message> msgs = mNotifHandler.getMessages(args);
+        List<NotificationCompat.MessagingStyle.Message> msgs = mNotifHandler.getMessages(notif);
         if (msgs == null || msgs.isEmpty()) {
             Log.d(TAG, "Reading notification: no messages");
             mTTS.speak(R.string.speech_reply_no_messages_in_notif);
@@ -134,11 +180,11 @@ public class VoicePlateActivity extends Activity
         }
 
         // Asking for reply, if available
-        if (mNotifHandler.getAction(args, Notification.Action.SEMANTIC_ACTION_REPLY) != null) {
+        if (mNotifHandler.getAction(notif, Notification.Action.SEMANTIC_ACTION_REPLY) != null) {
             sb.append(getString(R.string.speech_reply_reply_question));
             mTTS.ask(mTTS.createBooleanQuestionCallback(affirmative -> {
                 if (affirmative) {
-                    onReplyNotification(args);
+                    onReplyNotification(notif);
                 } else {
                     mPresenter.updateState(VoicePlateController.State.DELIVERING);
                     mTTS.speak(R.string.speech_reply_cancelled_order);
@@ -150,9 +196,9 @@ public class VoicePlateActivity extends Activity
         }
     }
 
-    private void onReplyNotification(Bundle args) {
+    private void onReplyNotification(Notification notif) {
         Log.d(TAG, "Reply notification");
-        Notification.Action action = mNotifHandler.getAction(args,
+        Notification.Action action = mNotifHandler.getAction(notif,
                 Notification.Action.SEMANTIC_ACTION_REPLY);
         if (action == null) {
             mTTS.speak(R.string.speech_reply_cannot_be_replied);
@@ -166,7 +212,7 @@ public class VoicePlateActivity extends Activity
                 mTTS.speak(R.string.speech_reply_not_recognized);
                 return;
             }
-            List<NotificationCompat.MessagingStyle.Message> msgs = mNotifHandler.getMessages(args);
+            List<NotificationCompat.MessagingStyle.Message> msgs = mNotifHandler.getMessages(notif);
             String sender  = msgs.size() == 1
                     ? msgs.get(0).getPerson().getName().toString()
                     : getString(R.string.speech_reply_group_reply_receiver);
