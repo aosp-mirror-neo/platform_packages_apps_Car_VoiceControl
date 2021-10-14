@@ -17,7 +17,9 @@ package com.android.car.voicecontrol;
 
 import static com.android.car.voicecontrol.DirectSendUtils.AMBIGUOUS_RESULT;
 
+import android.annotation.StringRes;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
@@ -28,6 +30,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -41,6 +45,7 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.voicecontrol.actuators.SkillRouter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -136,10 +141,45 @@ public class VoicePlateActivity extends Activity
         mSTT.startListening(this);
     }
 
+    private void ask(TextToSpeech.QuestionCallback callback, @StringRes int resId, Object... args) {
+        ask(callback, getString(resId), args);
+    }
+
+    private void ask(TextToSpeech.QuestionCallback callback, String str, Object... args) {
+        if (PreferencesController.getInstance(this).isDirectSendTextInput()) {
+            final EditText input = new EditText(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+
+            String confirm = getString(R.string.debug_dialog_confirm);
+            String cancel = getString(R.string.debug_dialog_cancel);
+
+            AlertDialog alertDialog = new AlertDialog.Builder(this)
+                    .setMessage(str)
+                    .setPositiveButton(confirm, (dialog, which) -> {
+                        List<String> result = new ArrayList<>();
+                        result.add(input.getText().toString());
+                        callback.onResult(result);
+                    })
+                    .setNegativeButton(cancel, (dialog, which) -> {
+                        List<String> result = new ArrayList<>();
+                        callback.onResult(result);
+                    })
+                    .setView(input)
+                    .create();
+
+            alertDialog.show();
+        } else {
+            mTTS.ask(callback, str, args);
+        }
+    }
+
     private void askToSendSMS(PendingIntent pendingIntent,
             String deviceAddress, String number, String name) {
         mPresenter.updateRecognizedText(getString(R.string.speech_reply_request_message));
-        mTTS.ask(strings -> {
+        ask(strings -> {
             if (strings.isEmpty()) {
                 mTTS.speak(R.string.speech_reply_not_recognized);
                 mPresenter.updateRecognizedText(getString(R.string.speech_reply_not_recognized));
@@ -159,7 +199,7 @@ public class VoicePlateActivity extends Activity
     private void askToDisambiguatePhoneNumber(DirectSendUtils.ResultsCallback callback,
             String deviceAddress) {
         mPresenter.updateRecognizedText(getString(R.string.speech_reply_request_contact));
-        mTTS.ask(strings -> {
+        ask(strings -> {
             if (strings.isEmpty()) {
                 callback.onFailure(getString(R.string.speech_reply_unrecognized_contact));
                 return;
@@ -179,7 +219,7 @@ public class VoicePlateActivity extends Activity
                 String numberAskString = DirectSendUtils.formatNumberAskString(
                         getApplicationContext(), contact.getNumbers());
                 mPresenter.updateRecognizedText(numberAskString);
-                mTTS.ask(strings2 -> {
+                ask(strings2 -> {
                     if (strings2.isEmpty()) {
                         callback.onFailure(getString(R.string.speech_reply_unrecognized_number));
                         return;
@@ -217,7 +257,7 @@ public class VoicePlateActivity extends Activity
                 devices);
         mPresenter.updateRecognizedText(deviceAskString);
 
-        mTTS.ask(strings -> {
+        ask(strings -> {
             String disambiguatedAddress = null;
 
             if (strings.isEmpty()) {

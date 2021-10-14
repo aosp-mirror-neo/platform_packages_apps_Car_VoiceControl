@@ -36,5 +36,11 @@
             android:title="@string/preference_voice"
             android:summary="@string/preference_voice_summary"/>
 
+        <SwitchPreference
+                android:key="toggle_debug_direct_send"
+                android:title="@string/debug_direct_send_preference"
+                android:summaryOn="@string/summary_on_direct_send_preference"
+                android:summaryOff="@string/summary_off_direct_send_preference"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

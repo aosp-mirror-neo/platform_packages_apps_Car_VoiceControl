@@ -30,6 +30,7 @@ public class PreferencesController {
 
     public static final String PREF_KEY_USER_NAME = "user_name";
     public static final String PREF_KEY_VOICE = "voice";
+    public static final String PREF_KEY_DEBUG_DIRECT_SEND = "toggle_debug_direct_send";
 
     private PreferencesController(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -86,5 +87,12 @@ public class PreferencesController {
      */
     public String getVoice() {
         return mPreferences.getString(PREF_KEY_VOICE, null);
+    }
+
+    /**
+     * @return true if text input enabled, false otherwise
+     */
+    public boolean isDirectSendTextInput() {
+        return mPreferences.getBoolean(PREF_KEY_DEBUG_DIRECT_SEND, false);
     }
 }

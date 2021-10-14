@@ -35,6 +35,12 @@
     <string name="preference_voice" translatable="false">Preferred voice</string>
     <string name="preference_voice_summary" translatable="false">Select the type of voice you would like Mica to use</string>
 
+    <string name="debug_dialog_confirm">OK</string>
+    <string name="debug_dialog_cancel">Cancel</string>
+    <string name="debug_direct_send_preference">Enable text input for direct send</string>
+    <string name="summary_on_direct_send_preference">Text input enabled</string>
+    <string name="summary_off_direct_send_preference">Text input disabled</string>
+
     <!-- TTS -->
     <string name="speech_reply_nav_okay" translatable="false">Alright, starting navigation to \'%s\'.</string>
     <string name="speech_reply_nav_cancel_not_supported" translatable="false">Sorry but I couldn\'t stop the navigation.</string>
