@@ -467,11 +467,7 @@ public class VoicePlateActivity extends Activity
                 mTTS.speak(R.string.speech_reply_not_recognized);
                 return;
             }
-            List<NotificationCompat.MessagingStyle.Message> msgs = mNotifHandler.getMessages(notif);
-            String sender  = msgs.size() == 1
-                    ? msgs.get(0).getPerson().getName().toString()
-                    : getString(R.string.speech_reply_group_reply_receiver);
-            mTTS.speak(R.string.speech_reply_sending_reply, sender);
+            mTTS.speak(R.string.speech_reply_sending_reply);
             Intent additionalData = mNotifHandler.writeReply(action, strings.get(0));
             mNotifHandler.fireAction(action, additionalData);
         }, R.string.speech_reply_message_question);

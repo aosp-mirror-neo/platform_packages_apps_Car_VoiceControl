@@ -72,8 +72,7 @@
     <string name="speech_reply_missing_notif_access" translatable="false">In order to read your notifications you need to provide me access. When it is safe, please open the notifications panel and follow the instructions I left there for you.</string>
     <string name="speech_reply_error_reading_notif" translatable="false">Something went wrong trying to read your notifications.</string>
     <string name="speech_reply_cannot_be_replied" translatable="false">That message can not be replied.</string>
-    <string name="speech_reply_sending_reply" translatable="false">Okay, sending the reply to \'%s\'.</string>
-    <string name="speech_reply_group_reply_receiver" translatable="false">the group</string>
+    <string name="speech_reply_sending_reply" translatable="false">Okay, sending reply.</string>
     <string name="speech_reply_cancelled_order" translatable="false">Okay.</string>
     <string name="speech_reply_reply_question" translatable="false">Do you want to reply?.</string>
     <string name="speech_reply_reading_single_notif" translatable="false">Okay, here is the message: \'%1$s\' said \'%2$s\'.</string>
