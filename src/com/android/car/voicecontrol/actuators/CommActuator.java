@@ -81,7 +81,8 @@ public class CommActuator implements SkillRouter.Actuator {
 
     private void registerSMSResultReceiver() {
         IntentFilter intentFilter = new IntentFilter(SMS_RESULT_ACTION);
-        mContext.registerReceiver(mBroadcastReceiver, intentFilter);
+        mContext.registerReceiver(mBroadcastReceiver, intentFilter,
+                Context.RECEIVER_EXPORTED_UNAUDITED);
     }
 
     @Override
