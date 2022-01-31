@@ -84,7 +84,7 @@ public final class DirectSendUtils {
         String[] key = context.getResources().getStringArray(R.array.speech_reply_ordinals);
         int i = 0;
         for (PhoneNumber number : numbers) {
-            str += String.format(" Say %s for %s.", key[i], number.getNumber());
+            str += String.format(" Say %s for %s.", key[i], number.getRawNumber());
             i++;
             if (i > 2) {
                 break;

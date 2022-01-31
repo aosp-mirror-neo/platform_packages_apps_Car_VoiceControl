@@ -213,7 +213,7 @@ public class VoicePlateActivity extends Activity
             if (contact.getNumbers().size() == 0) {
                 callback.onFailure(getString(R.string.speech_reply_unrecognized_contact));
             } else if (contact.getNumbers().size() == 1) {
-                callback.onSuccess(contact.getNumbers().get(0).getNumber(),
+                callback.onSuccess(contact.getNumbers().get(0).getRawNumber(),
                         contact.getDisplayName());
             } else if (contact.getNumbers().size() > 1) {
                 String numberAskString = DirectSendUtils.formatNumberAskString(
@@ -241,7 +241,7 @@ public class VoicePlateActivity extends Activity
                                     getString(R.string.speech_reply_unrecognized_number));
                             return;
                         }
-                        callback.onSuccess(phoneNumber.getNumber(), contact.getDisplayName());
+                        callback.onSuccess(phoneNumber.getRawNumber(), contact.getDisplayName());
                     } catch (IndexOutOfBoundsException ex) {
                         Log.w(TAG, "Specified phone number index out of list bounds. " + ex);
                         callback.onFailure(getString(R.string.speech_reply_unrecognized_number));
