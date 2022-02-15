@@ -81,7 +81,8 @@ public class CommActuator implements SkillRouter.Actuator {
 
     private void registerSMSResultReceiver() {
         IntentFilter intentFilter = new IntentFilter(SMS_RESULT_ACTION);
-        mContext.registerReceiver(mBroadcastReceiver, intentFilter);
+        mContext.registerReceiver(mBroadcastReceiver, intentFilter,
+                Context.RECEIVER_EXPORTED_UNAUDITED);
     }
 
     @Override
@@ -144,11 +145,11 @@ public class CommActuator implements SkillRouter.Actuator {
             return null;
         }
         if (contact.getPrimaryPhoneNumber() != null
-                && !TextUtils.isEmpty(contact.getPrimaryPhoneNumber().getNumber())) {
-            return contact.getPrimaryPhoneNumber().getNumber();
+                && !TextUtils.isEmpty(contact.getPrimaryPhoneNumber().getRawNumber())) {
+            return contact.getPrimaryPhoneNumber().getRawNumber();
         }
         for (PhoneNumber number : contact.getNumbers()) {
-            String value = number.getNumber();
+            String value = number.getRawNumber();
             if (value != null && !value.isEmpty()) {
                 return value;
             }
