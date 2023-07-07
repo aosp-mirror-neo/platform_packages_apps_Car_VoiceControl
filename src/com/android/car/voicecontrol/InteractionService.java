@@ -163,7 +163,6 @@ public class InteractionService extends VoiceInteractionService {
     public void onReady() {
         Log.e(TAG, "onReady()");
         super.onReady();
-        createNotificationChannel();
         updateNotification();
 
         // Setup always-on hot-word detector here (see: VoiceInteractionService#onReady()) for
@@ -214,33 +213,32 @@ public class InteractionService extends VoiceInteractionService {
     }
 
     private void updateNotification() {
+        if (mNotificationManager == null) {
+            mNotificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
+            mNotificationManager.createNotificationChannel(channel);
+        }
         if (isSetupComplete()) {
             Log.d(TAG, "updateNotification(): is setup complete = true");
             mNotificationManager.cancel(NOTIFICATION_ID);
-        } else {
-            Log.d(TAG, "updateNotification(): is setup complete = false");
-            Intent intent = new Intent(this, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setColor(getColor(R.color.car_ui_color_accent))
-                    .setContentTitle(getString(R.string.notification_setup_title))
-                    .setContentText(getString(R.string.notification_setup_text))
-                    .setContentIntent(pendingIntent)
-                    .build();
-
-            mNotificationManager.notify(NOTIFICATION_ID, notification);
+            return;
         }
-    }
+        Log.d(TAG, "updateNotification(): is setup complete = false");
+        Intent intent = new Intent(this, SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-    private void createNotificationChannel() {
-        mNotificationManager = getSystemService(NotificationManager.class);
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
-        mNotificationManager.createNotificationChannel(channel);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setColor(getColor(R.color.car_ui_color_accent))
+                .setContentTitle(getString(R.string.notification_setup_title))
+                .setContentText(getString(R.string.notification_setup_text))
+                .setContentIntent(pendingIntent)
+                .build();
+
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     @NonNull
