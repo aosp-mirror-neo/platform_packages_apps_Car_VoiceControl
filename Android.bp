@@ -55,10 +55,4 @@ android_app {
         "car-broadcastradio-support",
         "car-telephony-common",
     ],
-
-    product_variables: {
-        pdk: {
-            enabled: false,
-        },
-    },
 }
