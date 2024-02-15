@@ -138,7 +138,7 @@ public class MediaActuator implements SkillRouter.Actuator, MediaBrowserConnecto
             ComponentName componentName = new ComponentName(packageName, className);
             MediaSource source = MediaSource.create(mContext, componentName);
             if (source != null) {
-                result.put(source.getDisplayName().toString().toLowerCase(), source);
+                result.put(source.getDisplayName(mContext).toString().toLowerCase(), source);
             }
         }
         return result;
@@ -200,7 +200,7 @@ public class MediaActuator implements SkillRouter.Actuator, MediaBrowserConnecto
                                     R.string.speech_reply_not_ready_to_play,
                                     R.string.speech_reply_okay_to_play_source, tts)) {
                                 tts.speak(R.string.speech_reply_source_error,
-                                        mediaSource.getDisplayName());
+                                        mediaSource.getDisplayName(mContext));
                             }
                             browser.disconnect();
                             break;
@@ -235,19 +235,20 @@ public class MediaActuator implements SkillRouter.Actuator, MediaBrowserConnecto
             Log.d(TAG, "No connected controller");
             return false;
         }
+        CharSequence displayName = mCurrentSource.getDisplayName(mContext);
         PlaybackStateCompat playbackState = mMediaController.getPlaybackState();
         if (!ACTIVE_STATES.contains(playbackState.getState())) {
-            tts.speak(R.string.speech_reply_nothing_to_play, mCurrentSource.getDisplayName());
+            tts.speak(R.string.speech_reply_nothing_to_play, displayName);
             return false;
         }
         MediaMetadataCompat metadata = mMediaController.getMetadata();
         if (metadata == null || metadata.getDescription() == null
                 || metadata.getDescription().getTitle() == null) {
-            tts.speak(R.string.speech_reply_playing_unknown, mCurrentSource.getDisplayName());
+            tts.speak(R.string.speech_reply_playing_unknown, displayName);
             return true;
         }
         String song = metadata.toString();
-        tts.speak(R.string.speech_reply_playing_song, song, mCurrentSource.getDisplayName());
+        tts.speak(R.string.speech_reply_playing_song, song, displayName);
         return true;
     }
 
@@ -288,7 +289,7 @@ public class MediaActuator implements SkillRouter.Actuator, MediaBrowserConnecto
             Log.d(TAG, String.format("executePlaybackAction(): action %s not available"
                             + " (available: %s)", LogUtils.playbackActionToString(action),
                     LogUtils.playbackActionToString(state != null ? state.getActions() : 0)));
-            tts.speak(unavailableSpeech, source.getDisplayName());
+            tts.speak(unavailableSpeech, source.getDisplayName(mContext));
             return true;
         }
         if (action == PlaybackStateCompat.ACTION_PLAY) {
@@ -303,7 +304,7 @@ public class MediaActuator implements SkillRouter.Actuator, MediaBrowserConnecto
             tts.speak(R.string.speech_reply_unrecognized_cmd);
             return false;
         }
-        tts.speak(okaySpeech, source.getDisplayName());
+        tts.speak(okaySpeech, source.getDisplayName(mContext));
         return true;
     }
 
